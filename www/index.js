@@ -4,9 +4,10 @@ const pre = document.getElementById("game-of-life-canvas");
 const universe = Universe.new();
 
 const loop = () => {
-  pre.textContent = universe.render();
   universe.tick();
-  requestAnimationFrame(loop);
+  pre.textContent = universe.render();
+  setTimeout(loop, 500);
 }
 
-requestAnimationFrame(loop);
+pre.textContent = universe.render();
+loop();
