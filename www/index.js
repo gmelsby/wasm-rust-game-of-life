@@ -4,8 +4,7 @@ import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
 const CELL_SIZE = 5;
 const GRID_COLOR = "#CCCCCC";
-const DEAD_COLOR = "#FFFFFF";
-const ALIVE_COLOR = "#000000";
+const CELL_COLORS = ["#FFFFFF", "#15aa20", "#15aa6b", "#159faa", "#1554aa", "#2015aa", "#6b15aa", "#000000"]
 
 const universe = Universe.new();
 const width = universe.width();
@@ -42,10 +41,8 @@ const drawCells = () => {
 
   [...Array(height)].forEach((_, i) => {
     [...Array(width)].forEach((_, j) => {
-      const cell = cells[universe.get_index(i, j)];
-      ctx.fillStyle = cell === Cell.Alive ?
-      ALIVE_COLOR :
-      DEAD_COLOR;
+      const cellVal = cells[universe.get_index(i, j)];
+      ctx.fillStyle = CELL_COLORS[cellVal]
 
       ctx.fillRect(
         j * (CELL_SIZE + 1) + 1,
@@ -61,7 +58,7 @@ const loop = () => {
   drawGrid();
   drawCells();
   universe.tick();
-  setTimeout(loop, 500);
+  setTimeout(loop, 100);
 }
 
 loop();

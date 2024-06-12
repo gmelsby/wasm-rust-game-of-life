@@ -1,30 +1,22 @@
 mod utils;
 
-use std::fmt;
+use std::{fmt, u8};
 use rand::Rng;
 
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
-}
-
-#[wasm_bindgen]
 pub struct Universe {
     width: u32,
     height: u32,
-    cells: Vec<Cell>,
+    cells: Vec<u8>,
 }
 
 impl fmt::Display for Universe {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for line in self.cells.as_slice().chunks(self.width as usize) {
             for &cell in line {
-                write!(f, "{}", match cell {Cell::Dead => '💀', Cell::Alive => '😂'})?;
+                write!(f, "{}", match cell {0 => '💀', _ => '😂'})?;
             }
             write!(f, "\n")?;
         }
@@ -41,12 +33,7 @@ impl Universe {
         let mut rng = rand::thread_rng();
         let cells = (0..width * height)
             .map(|_| {
-                // half chance seems to work well
-                if rng.gen_range(0, 2) < 1 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
+                rng.gen_range(0, 2) as u8
             })
             .collect();
             
@@ -71,7 +58,7 @@ impl Universe {
     }
 
     // sends a pointer to WASM memory
-    pub fn cells(&self) -> *const Cell {
+    pub fn cells(&self) -> *const u8 {
         self.cells.as_ptr()
     }
 
@@ -87,16 +74,17 @@ impl Universe {
                 let neighbor_count = self.live_neighbor_count(row, col);
                 // match expression determines what happens to the cell
                 let next_cell = match (cell, neighbor_count) {
-                    // Rule 1: Underpopulation
-                    (Cell::Alive, count) if count < 2 => Cell::Dead,
-                    // Rule 2: live cell with 2-3 live neighbors continues living
-                    (Cell::Alive, count) if count == 2 || count == 3 => Cell::Alive,
-                    // Rule 3: live cell with too many neighbors (> 3) dies
-                    (Cell::Alive, count) if count > 3 => Cell::Dead,
                     // Rule 4: dead cell with 3 live neighbors (no more and no fewer) comes to life
-                    (Cell::Dead, count) if count == 3 => Cell::Alive,
+                    (0, count) if count == 3 => 1,
+                    // dead cells stay dead otherwise
+                    (0, count) if count != 3 => 0,
+                    // Rule 1: Underpopulation
+                    // Rule 3: live cell with too many neighbors (> 3) dies
+                    (_age, count) if count < 2 || count > 3 => 0,
+                    // Rule 2: live cell with 2-3 live neighbors continues living
+                    (age, count) if age < 7 && (count == 2 || count == 3) => age + 1,
                     // If other rules do not apply, nothing happens
-                    (boring_cell, _) => boring_cell,
+                    (age, _) => age,
                 };
                 // update next frame
                 next[idx] = next_cell;
@@ -105,7 +93,7 @@ impl Universe {
         self.cells = next;
     }
 
-    fn get_index(&self, row: u32, col: u32) -> usize {
+    pub fn get_index(&self, row: u32, col: u32) -> usize {
         (row * self.width + col) as usize
     }
 
@@ -120,7 +108,9 @@ impl Universe {
 
                 let candidate_row = (row + y) % self.height;
                 let candidate_col = (col + x) % self.width;
-                count += self.cells[self.get_index(candidate_row, candidate_col)] as u8
+                if self.cells[self.get_index(candidate_row, candidate_col)] != 0 {
+                    count += 1;
+                }
             }
         }
         count
