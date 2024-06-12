@@ -32,11 +32,14 @@ impl fmt::Display for Universe {
     }
 }
 
+# [wasm_bindgen]
 impl Universe {
-    pub fn new(width: u32 , height: u32, seed: u32) -> Universe {
+    pub fn new() -> Universe {
+        let width = 64;
+        let height = 64;
         let cells = (0..width * height)
             .map(|i| {
-                if (i + seed) % 3 == 0 || (2 * i + 5 * seed) % 9  == 0{
+                if i % 2 == 0 || i % 3  == 0 {
                     Cell::Alive
                 } else {
                     Cell::Dead
@@ -49,6 +52,10 @@ impl Universe {
                 height,
                 cells,
             }
+    }
+
+    pub fn render(&self) -> String {
+        self.to_string()
     }
 
     // passes time in the universe
