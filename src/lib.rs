@@ -39,7 +39,7 @@ impl Universe {
         let height = 64;
         let cells = (0..width * height)
             .map(|i| {
-                if i % 2 == 0 || i % 3  == 0 {
+                if i % 2 == 0 || i % 7 == 0 {
                     Cell::Alive
                 } else {
                     Cell::Dead
