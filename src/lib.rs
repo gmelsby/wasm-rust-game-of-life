@@ -41,6 +41,7 @@ impl Universe {
         let mut rng = rand::thread_rng();
         let cells = (0..width * height)
             .map(|_| {
+                // half chance seems to work well
                 if rng.gen_range(0, 2) < 1 {
                     Cell::Alive
                 } else {
@@ -58,6 +59,20 @@ impl Universe {
 
     pub fn render(&self) -> String {
         self.to_string()
+    }
+
+    // basic getters
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    // sends a pointer to WASM memory
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
     }
 
     // passes time in the universe
