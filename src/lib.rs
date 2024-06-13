@@ -1,9 +1,17 @@
 mod utils;
 
+
+use web_sys;
 use std::{fmt, u8};
 use rand::Rng;
 
 use wasm_bindgen::prelude::*;
+
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 #[wasm_bindgen]
 pub struct Universe {
@@ -28,6 +36,7 @@ impl fmt::Display for Universe {
 # [wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
+        utils::set_panic_hook();
         let width = 64;
         let height = 64;
         let mut rng = rand::thread_rng();
@@ -88,6 +97,13 @@ impl Universe {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let neighbor_count = self.live_neighbor_count(row, col);
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    neighbor_count
+                );
                 // match expression determines what happens to the cell
                 let next_cell = match (cell, neighbor_count) {
                     // Rule 4: dead cell with 3 live neighbors (no more and no fewer) comes to life
@@ -102,6 +118,7 @@ impl Universe {
                     // If other rules do not apply, nothing happens
                     (age, _) => age,
                 };
+                log!("it becomes {:?}", next_cell);
                 // update next frame
                 next[idx] = next_cell;
             }
