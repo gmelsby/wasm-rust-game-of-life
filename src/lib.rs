@@ -40,12 +40,22 @@ impl Universe {
         let width = 64;
         let height = 64;
         let mut rng = rand::thread_rng();
-        let cells = (0..width * height)
+        let cells: Vec<u8> = (0..width * height)
             .map(|_| {
                 rng.gen_range(0, 2) as u8
             })
             .collect();
-            
+
+        log!(
+            "Created universe of width {}, height {}, with {} living cells", 
+            width,
+            height,
+            cells.clone()
+                .into_iter()
+                .filter(|cell| *cell > 0)
+                .count()
+        );
+
             Universe {
                 width,
                 height,
@@ -97,13 +107,7 @@ impl Universe {
                 let idx = self.get_index(row, col);
                 let cell = self.cells[idx];
                 let neighbor_count = self.live_neighbor_count(row, col);
-                log!(
-                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
-                    row,
-                    col,
-                    cell,
-                    neighbor_count
-                );
+
                 // match expression determines what happens to the cell
                 let next_cell = match (cell, neighbor_count) {
                     // Rule 4: dead cell with 3 live neighbors (no more and no fewer) comes to life
@@ -118,7 +122,7 @@ impl Universe {
                     // If other rules do not apply, nothing happens
                     (age, _) => age,
                 };
-                log!("it becomes {:?}", next_cell);
+
                 // update next frame
                 next[idx] = next_cell;
             }
