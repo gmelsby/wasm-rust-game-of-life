@@ -57,6 +57,22 @@ impl Universe {
         self.height
     }
 
+    // basic setters that kill all cells
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.kill_all();
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.kill_all();
+    }
+
+    // kill all cells
+    pub fn kill_all(&mut self) {
+        self.cells = (0..self.width * self.height).map(|_| 0).collect();
+    }
+
     // sends a pointer to WASM memory
     pub fn cells(&self) -> *const u8 {
         self.cells.as_ptr()
@@ -93,6 +109,7 @@ impl Universe {
         self.cells = next;
     }
 
+    // gets location of cell at row, col in memory
     pub fn get_index(&self, row: u32, col: u32) -> usize {
         (row * self.width + col) as usize
     }
@@ -114,5 +131,20 @@ impl Universe {
             }
         }
         count
+    }
+}
+
+impl Universe {
+    // gets the values of all cells in the universe (the wasm heap)
+    pub fn get_cells(&self) -> &[u8] {
+        &self.cells
+    }
+
+    // changes the value of the cells in the passed in Vec to alive
+    pub fn set_cells_alive(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter().cloned() {
+            let idx = self.get_index(row, col);
+            self.cells[idx] = 1;
+        }
     }
 }
