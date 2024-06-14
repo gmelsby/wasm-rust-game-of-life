@@ -35,10 +35,8 @@ impl fmt::Display for Universe {
 
 # [wasm_bindgen]
 impl Universe {
-    pub fn new() -> Universe {
+    pub fn new(width: u32, height: u32) -> Universe {
         utils::set_panic_hook();
-        let width = 64;
-        let height = 64;
         let mut rng = rand::thread_rng();
         let cells: Vec<u8> = (0..width * height)
             .map(|_| {
@@ -84,6 +82,13 @@ impl Universe {
             .count()
     }
 
+    // inserts alive cell at location, if cell is already alive becomes fresh age 1 cell
+    pub fn insert_cell(&mut self, row: u32, col:u32) {
+        let idx = self.get_index(row, col);
+        self.cells[idx] = 1;
+    }
+
+    // if cell is alive, makes it dead, if cell is dead makes it alive
     pub fn toggle_cell(&mut self, row: u32, col: u32) {
         let idx = self.get_index(row, col);
         let current_val = self.cells[idx];
