@@ -69,15 +69,34 @@ canvas.addEventListener("click", event => {
   const universeWidth = universe.width();
   const universeHeight = universe.height();
 
-  // draw glider
   if (event.shiftKey) {
-    universe.insert_cell(row, col);
-    universe.insert_cell((row + 1) % universeHeight, col);
-    universe.insert_cell(row, (col + 1) % universeWidth);
-    universe.insert_cell((row + 1) % universeHeight, (col - 1) % universeWidth);
-    universe.insert_cell((row - 1) % universeHeight, (col - 1) % universeWidth);
+    // draw glider
+    const coordinates = [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, -1],
+      [-1, -1]
+    ];
+
+    coordinates.forEach(([r_delta, c_delta]) => {
+      universe.insert_cell((row + r_delta) % universeHeight, (col + c_delta) % universeWidth);
+    });
   } else if (event.altKey) {
-    // to implement
+    const coordinates = [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [-1, 0],
+      [-2, 0],
+      [-3, 1],
+      [-3, 4],
+      [-1, 4],
+    ];
+    coordinates.forEach(([r_delta, c_delta]) => {
+      universe.insert_cell((row + r_delta) % universeHeight, (col + c_delta) % universeWidth);
+    });
   } else {
     universe.toggle_cell(row, col);
   }
