@@ -83,4 +83,4 @@ const loop = () => {
   animationId = requestAnimationFrame(loop);
 }
 
-loop();
+play();
