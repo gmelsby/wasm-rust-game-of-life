@@ -147,7 +147,6 @@ impl Universe {
             }
         }
         self.cells = next;
-        log!("{} living cells", self.living_cells_count());
     }
 
     // gets location of cell at row, col in memory
