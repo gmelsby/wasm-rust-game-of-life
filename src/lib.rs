@@ -84,6 +84,12 @@ impl Universe {
             .count()
     }
 
+    pub fn toggle_cell(&mut self, row: u32, col: u32) {
+        let idx = self.get_index(row, col);
+        let current_val = self.cells[idx];
+        self.cells[idx] = if current_val == 0 { 1 } else { 0 };
+    }
+
     // basic setters that kill all cells
     pub fn set_width(&mut self, width: u32) {
         self.width = width;
