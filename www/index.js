@@ -83,6 +83,7 @@ canvas.addEventListener("click", event => {
       universe.insert_cell((row + r_delta) % universeHeight, (col + c_delta) % universeWidth);
     });
   } else if (event.altKey) {
+    //draws lwss
     const coordinates = [
       [0, 0],
       [0, 1],
