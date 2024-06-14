@@ -46,21 +46,22 @@ impl Universe {
             })
             .collect();
 
+        let universe = Universe {
+            width,
+            height,
+            cells,
+        };
+
         log!(
             "Created universe of width {}, height {}, with {} living cells", 
             width,
             height,
-            cells.clone()
-                .into_iter()
-                .filter(|cell| *cell > 0)
-                .count()
+            universe.living_cells_count()
         );
 
-            Universe {
-                width,
-                height,
-                cells,
-            }
+        return universe;
+
+
     }
 
     pub fn render(&self) -> String {
@@ -74,6 +75,13 @@ impl Universe {
 
     pub fn height(&self) -> u32 {
         self.height
+    }
+
+    pub fn living_cells_count(&self) -> usize {
+        self.cells.clone()
+            .into_iter()
+            .filter(|cell| *cell > 0)
+            .count()
     }
 
     // basic setters that kill all cells
@@ -128,6 +136,7 @@ impl Universe {
             }
         }
         self.cells = next;
+        log!("{} living cells", self.living_cells_count());
     }
 
     // gets location of cell at row, col in memory

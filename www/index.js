@@ -54,11 +54,33 @@ const drawCells = () => {
   });
 }
 
+let animationId = null;
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+  playPauseButton.textContent = "⏸";
+  loop();
+};
+
+const pause = () => {
+  playPauseButton.textContent = "▶";
+  cancelAnimationFrame(animationId);
+  animationId = null;
+};
+
+playPauseButton.addEventListener("click", event => {
+  if (animationId === null) {
+    play();
+  } else {
+    pause();
+  }
+});
+
 const loop = () => {
   drawGrid();
   drawCells();
   universe.tick();
-  setTimeout(loop, 100);
+  animationId = requestAnimationFrame(loop);
 }
 
 loop();
