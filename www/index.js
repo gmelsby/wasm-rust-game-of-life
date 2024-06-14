@@ -1,4 +1,4 @@
-import { Universe, Cell } from "wasm-game-of-life";
+import { Universe } from "wasm-game-of-life";
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
 
@@ -6,7 +6,7 @@ const CELL_SIZE = 5;
 const GRID_COLOR = "#CCCCCC";
 const CELL_COLORS = ["#FFFFFF", "#15aa20", "#15aa6b", "#159faa", "#1554aa", "#2015aa", "#6b15aa", "#000000"]
 
-const universe = Universe.new();
+const universe = Universe.new(256, 256);
 const width = universe.width();
 const height = universe.height();
 
@@ -66,7 +66,21 @@ canvas.addEventListener("click", event => {
   const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
   const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-  universe.toggle_cell(row, col);
+  const universeWidth = universe.width();
+  const universeHeight = universe.height();
+
+  // draw glider
+  if (event.shiftKey) {
+    universe.insert_cell(row, col);
+    universe.insert_cell((row + 1) % universeHeight, col);
+    universe.insert_cell(row, (col + 1) % universeWidth);
+    universe.insert_cell((row + 1) % universeHeight, (col - 1) % universeWidth);
+    universe.insert_cell((row - 1) % universeHeight, (col - 1) % universeWidth);
+  } else if (event.altKey) {
+    // to implement
+  } else {
+    universe.toggle_cell(row, col);
+  }
 
   drawGrid();
   drawCells();
